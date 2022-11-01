@@ -70,6 +70,18 @@ void connectToNetwork()
   Serial.println("Connected to network");
 }
 
+void sendMessageToTCPServer() {
+  Serial.println("Send TCP message to server");
+  WiFiClient client;
+  if (!client.connect(host, port))
+  {
+    Serial.println("connection failed");
+    return;
+  }
+  client.print("My name is ESP32-Teacher");
+  client.stop();
+}
+
 void setup()
 {
 
@@ -84,15 +96,6 @@ void setup()
 
 void loop()
 {
-  Serial.println("Send TCP message to server");
-  WiFiClient client;
-  if (!client.connect(host, port))
-  {
-    Serial.println("connection failed");
-    return;
-  }
-  client.print("My name is ESP32-Teacher");
-  client.stop();
-
+  sendMessageToTCPServer();
   delay(2000);
 }
