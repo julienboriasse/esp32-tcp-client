@@ -1,12 +1,17 @@
 // Source : http://www.iotsharing.com/2017/05/tcp-udp-ip-with-esp32.html
 // Source : https://www.dfrobot.com/blog-948.html
+// Source : https://github.com/Links2004/arduinoWebSockets/blob/master/examples/esp32/WebSocketClient/WebSocketClient.ino
 
 #include <Arduino.h>
 #include "secrets.h"
 #include "WiFi.h"
 
+#include <WebSocketsClient.h>
+
 const char *ssid = WIFI_SSID;
 const char *password = WIFI_PASSWORD;
+
+WebSocketsClient webSocket;
 
 const char *host = "10.20.60.74";
 const int port = 10000;
@@ -28,7 +33,7 @@ String translateEncryptionType(wifi_auth_mode_t encryptionType)
     return "WPA_WPA2_PSK";
   case (WIFI_AUTH_WPA2_ENTERPRISE):
     return "WPA2_ENTERPRISE";
-  default:  
+  default:
     return "UNKNOWN";
   }
   return "UNKNOWN";
@@ -74,16 +79,32 @@ void connectToNetwork()
   Serial.println("Connected to network");
 }
 
-void sendMessageToTCPServer() {
-  Serial.println("Send TCP message to server");
-  WiFiClient client;
-  if (!client.connect(host, port))
+void webSocketEvent(WStype_t type, uint8_t *payload, size_t length)
+{
+  switch (type)
   {
-    Serial.println("connection failed");
-    return;
+  case WStype_DISCONNECTED:
+    Serial.printf("[WSc] Disconnected!\n");
+    break;
+  case WStype_CONNECTED:
+    Serial.printf("[WSc] Connected to url: %s\n", payload);
+
+    // send message to server when Connected
+    webSocket.sendTXT("Connected");
+    break;
+  case WStype_TEXT:
+    Serial.printf("[WSc] get text: %s\n", payload);
+
+    // send message to server
+    // webSocket.sendTXT("message here");
+    break;
+  case WStype_ERROR:
+  case WStype_FRAGMENT_TEXT_START:
+  case WStype_FRAGMENT_BIN_START:
+  case WStype_FRAGMENT:
+  case WStype_FRAGMENT_FIN:
+    break;
   }
-  client.print("My name is ESP32-Teacher");
-  client.stop();
 }
 
 void setup()
@@ -96,10 +117,21 @@ void setup()
 
   Serial.println(WiFi.macAddress());
   Serial.println(WiFi.localIP());
+
+  Serial.println("Starting Websocket client");
+
+  // server address, port and URL
+  webSocket.begin(host, 81, "/");
+
+  // event handler
+  webSocket.onEvent(webSocketEvent);
+
+  // try ever 5000 again if connection has failed
+  // webSocket.setReconnectInterval(5000);
 }
 
+unsigned long messageTimestamp = 0;
 void loop()
 {
-  sendMessageToTCPServer();
-  delay(2000);
+  webSocket.loop();
 }
