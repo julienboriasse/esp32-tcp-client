@@ -7,6 +7,9 @@
 const char *ssid = WIFI_SSID;
 const char *password = WIFI_PASSWORD;
 
+const char *host = "206.167.45.110";
+const int port = 10000;
+
 String translateEncryptionType(wifi_auth_mode_t encryptionType)
 {
 
@@ -77,10 +80,19 @@ void setup()
 
   Serial.println(WiFi.macAddress());
   Serial.println(WiFi.localIP());
-
 }
 
-void loop() {
+void loop()
+{
+  Serial.println("Send TCP message to server");
+  WiFiClient client;
+  if (!client.connect(host, port))
+  {
+    Serial.println("connection failed");
+    return;
+  }
+  client.print("My name is ESP32-Teacher");
+  client.stop();
 
-  
+  delay(2000);
 }
