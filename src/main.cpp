@@ -28,7 +28,10 @@ String translateEncryptionType(wifi_auth_mode_t encryptionType)
     return "WPA_WPA2_PSK";
   case (WIFI_AUTH_WPA2_ENTERPRISE):
     return "WPA2_ENTERPRISE";
+  default:  
+    return "UNKNOWN";
   }
+  return "UNKNOWN";
 }
 
 void scanNetworks()
