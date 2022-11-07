@@ -136,7 +136,7 @@ void setup()
   sensor.addTag("ESPSdkVersion", ESP.getSdkVersion());
 
   sensor.addTag("MACAddress", String(WiFi.macAddress()));
-  sensor.addTag("LocalIP", WiFi.localIP());
+  sensor.addTag("LocalIP", String(WiFi.localIP()));
 
   sensor.clearFields();
   sensor.addField("restart", 1);
