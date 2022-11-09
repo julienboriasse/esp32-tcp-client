@@ -1,7 +1,7 @@
 #if defined(ESP32)
 #include <WiFiMulti.h>
 WiFiMulti wifiMulti;
-#define DEVICE "ESP32-board-4"
+#define DEVICE "ESP32-board-2"
 #elif defined(ESP8266)
 #include <ESP8266WiFiMulti.h>
 ESP8266WiFiMulti wifiMulti;
