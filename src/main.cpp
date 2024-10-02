@@ -4,9 +4,7 @@
 #include <Arduino.h>
 #include "secrets.h"
 #include "WiFi.h"
-
-const char *ssid = WIFI_SSID;
-const char *password = WIFI_PASSWORD;
+#include "esp_wpa2.h"        // pour les réseaux wifi sécurisés
 
 const char *host = "10.20.60.74";
 const int port = 10000;
@@ -63,7 +61,11 @@ void scanNetworks()
 
 void connectToNetwork()
 {
-  WiFi.begin(ssid, password);
+#ifdef WIFI_ENTERPRISE
+  WiFi.begin(SECRET_SSID, WPA2_AUTH_PEAP, EAP_IDENTITY, EAP_USERNAME, EAP_PASSWORD);
+#else  
+  WiFi.begin(SECRET_SSID, EAP_PASSWORD);
+#endif
 
   while (WiFi.status() != WL_CONNECTED)
   {
